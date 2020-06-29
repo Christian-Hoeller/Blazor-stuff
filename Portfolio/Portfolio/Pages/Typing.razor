@@ -13,6 +13,10 @@
     <input type="text" @onkeyup="KeyUp" @bind-value="InputValue" @bind-value:event="oninput" />
 </div>
 
+WrongWords:@WrongWords <br />
+CorrectWords:@CorrectWords<br />
+CorrectCharacters:@CorrectCharacters<br />
+
 
 
 @code {
@@ -51,6 +55,10 @@
     private string CurrentWord { get; set; }
     private int CurrentWordIndex { get; set; } = 0;
 
+    public int CorrectWords { get; set; } = 0;
+    public int WrongWords { get; set; } = 0;
+    public int CorrectCharacters { get; set; } = 0;
+
     private void KeyUp(KeyboardEventArgs e)
     {
         UpdateWordColor();
@@ -59,6 +67,8 @@
             CurrentWord = InputValue.Split(" ")[0];
             string charactersAfterSpace = InputValue.Split(" ")[1];
             bool wordIsRight = CheckIfInputIsRight();
+
+            UpdateStats(wordIsRight);
 
             ClearInput();
             InputValue = charactersAfterSpace;
@@ -83,6 +93,19 @@
     private bool CheckIfInputIsRight()
     {
         return CurrentWord == WordSet[CurrentWordIndex];
+    }
+
+    private void UpdateStats(bool wordIsRight)
+    {
+        if (wordIsRight)
+        {
+            CorrectWords++;
+            CorrectCharacters += CurrentWord.Length;
+        }
+        else
+        {
+            WrongWords++;
+        }
     }
 
     private void ClearInput()
