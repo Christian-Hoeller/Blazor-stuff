@@ -7,11 +7,16 @@ namespace Portfolio.Classes
 {
     public class WordStyle
     {
-        public string BackgroundColor{ get; set; }
-        public string Color{ get; set; }
+        public WordStyle(string backgroundColor, string color)
+        {
+            Color = color;
+            BackgroundColor = backgroundColor;
+        }
+        public string BackgroundColor { get; set; }
+        public string Color { get; set; }
         public override string ToString()
         {
-            return $"color:{Color}; backgroung-color:{BackgroundColor};";
+            return $"color:{Color}; background-color:{BackgroundColor};";
         }
     }
 }

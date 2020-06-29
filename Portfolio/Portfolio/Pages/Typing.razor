@@ -5,7 +5,7 @@
 <div class="word-container">
     @for (int i = 0; i < WordSet.Length; i++)
     {
-        <span class="word-@i" style="@WordSetStyles[i]">@WordSet[i]</span>
+        <span class="word-@i" style="@WordSetStyles[i].ToString()">@WordSet[i]</span>
     }
 </div>
 
@@ -19,8 +19,17 @@
     protected override void OnInitialized()
     {
         FillWordSet();
-        WordSetStyles = new string[WordSet.Length];
-        WordSetStyles[0] = "background-color:gray";
+        WordSetStyles = new Classes.WordStyle[WordSet.Length];
+        FillStyles();
+    }
+
+    private void FillStyles()
+    {
+        for(int i = 0; i < WordSetStyles.Length; i++)
+        {
+            WordSetStyles[i] = new Classes.WordStyle("white", "black");
+        }
+        WordSetStyles[0].BackgroundColor = "gray";
     }
 
     private string currentWord;
@@ -29,11 +38,11 @@
 
     private string[] WordSet { get; set; }
 
-    private string[] WordSetStyles { get; set; }
+    private Portfolio.Classes.WordStyle[] WordSetStyles { get; set; }
+
 
     private int currentWordIndex = 0;
 
-    private string currentWordStlye = "color:green";
 
     private void FillWordSet()
     {
