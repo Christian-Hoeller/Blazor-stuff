@@ -10,16 +10,51 @@
 </div>
 
 <div class="word-input">
-    <input type="text" @onkeyup="KeyUp" @bind-value="InputValue" @bind-value:event="oninput" />
+    <input type="text" spellcheck="false" @onkeyup="KeyUp" @bind-value="InputValue" @bind-value:event="oninput" readonly=@gameOver />
 </div>
 
-WrongWords:@WrongWords <br />
-CorrectWords:@CorrectWords<br />
-CorrectCharacters:@CorrectCharacters<br />
 
+WrongWords:@wrongWords <br />
+CorrectWords:@correctWords<br />
+CorrectCharacters:@correctCharacters<br />
+<br />
+Time left:@TimeLeft
+<p>@displayText</p>
 
 
 @code {
+
+
+    #region Timer
+
+    TimeSpan TimeLeft = new TimeSpan(0, 0, 10);  //1 minute Timer
+    private bool timerStarted = false;
+    private string displayText = "";
+
+    async Task Timer()
+    {
+        timerStarted = true;
+        while (TimeLeft > new TimeSpan())
+        {
+            await Task.Delay(1000);
+            Console.WriteLine(TimeLeft);
+            TimeLeft = TimeLeft.Subtract(new TimeSpan(0, 0, 1));
+            StateHasChanged();
+        }
+        await AfterTime();
+        StateHasChanged();
+    }
+
+    Task AfterTime()
+    {
+        gameOver = true;
+        InputValue = string.Empty;
+        displayText = "Test ist vorbei";
+        return Task.CompletedTask;
+    }
+
+    #endregion
+
     private string[] WordSet { get; set; }
     private Portfolio.Classes.WordStyle[] WordSetStyles { get; set; }
 
@@ -32,7 +67,7 @@ CorrectCharacters:@CorrectCharacters<br />
     private void FillWordSet()
     {
         string[] words = new string[200];
-        List<string> wordList = new List<string>() { "Hallo", "wie", "geht", "es", "dir", "du", "coolian" };
+        List<string> wordList = new List<string>() { "Hallo", "wie", "geht", "es", "dir", "du", "Pferd" };
         Random r = new Random();
         for (int i = 0; i < words.Length; i++)
         {
@@ -51,60 +86,69 @@ CorrectCharacters:@CorrectCharacters<br />
         WordSetStyles[0].BackgroundColor = System.Drawing.Color.LightGray;
     }
 
+    private bool gameOver = false;
+
     private string InputValue { get; set; }
     private string CurrentWord { get; set; }
-    private int CurrentWordIndex { get; set; } = 0;
+    private int currentWordIndex { get; set; } = 0;
 
-    public int CorrectWords { get; set; } = 0;
-    public int WrongWords { get; set; } = 0;
-    public int CorrectCharacters { get; set; } = 0;
+    public int correctWords = 0;
+    public int wrongWords = 0;
+    public int correctCharacters = 0;
 
-    private void KeyUp(KeyboardEventArgs e)
+    private async void KeyUp(KeyboardEventArgs e)
     {
-        UpdateWordColor();
-        if (e.Key == " ")
+        if (!gameOver)
         {
-            CurrentWord = InputValue.Split(" ")[0];
-            string charactersAfterSpace = InputValue.Split(" ")[1];
-            bool wordIsRight = CheckIfInputIsRight();
+            UpdateWordColor();
+            if(timerStarted == false)
+            {
+                Timer();
+            }
+            if (e.Key == " ")
+            {
+                CurrentWord = InputValue.Split(" ")[0];
+                string charactersAfterSpace = InputValue.Split(" ")[1];
+                bool wordIsRight = CheckIfInputIsRight();
 
-            UpdateStats(wordIsRight);
+                UpdateStats(wordIsRight);
 
-            ClearInput();
-            InputValue = charactersAfterSpace;
-            CurrentWordIndex++;
-            UpdateWordBackgroundColor();
-            UpdateLastWordStlye(wordIsRight);
+                ClearInput();
+                InputValue = charactersAfterSpace;
+                currentWordIndex++;
+                UpdateWordBackgroundColor();
+                UpdateLastWordStlye(wordIsRight);
+            }
         }
     }
 
     private void UpdateWordColor()
     {
-        if (!WordSet[CurrentWordIndex].StartsWith(InputValue.Split(" ")[0]))
+        if (!WordSet[currentWordIndex].StartsWith(InputValue.Split(" ")[0]))
         {
-            WordSetStyles[CurrentWordIndex].Color = System.Drawing.Color.Red;
+            WordSetStyles[currentWordIndex].Color = System.Drawing.Color.Red;
         }
         else
         {
-            WordSetStyles[CurrentWordIndex].Color = System.Drawing.Color.Black;
+            WordSetStyles[currentWordIndex].Color = System.Drawing.Color.Black;
         }
     }
 
     private bool CheckIfInputIsRight()
     {
-        return CurrentWord == WordSet[CurrentWordIndex];
+        return CurrentWord == WordSet[currentWordIndex];
     }
 
     private void UpdateStats(bool wordIsRight)
     {
         if (wordIsRight)
         {
-            CorrectWords++;
-            CorrectCharacters += CurrentWord.Length;
+            correctWords++;
+            correctCharacters += CurrentWord.Length;
         }
         else
         {
-            WrongWords++;
+            wrongWords++;
         }
     }
 
@@ -116,19 +160,19 @@ CorrectCharacters:@CorrectCharacters<br />
 
     private void UpdateWordBackgroundColor()
     {
-        WordSetStyles[CurrentWordIndex - 1].BackgroundColor = System.Drawing.Color.White;
-        WordSetStyles[CurrentWordIndex].BackgroundColor = System.Drawing.Color.LightGray;
+        WordSetStyles[currentWordIndex - 1].BackgroundColor = System.Drawing.Color.White;
+        WordSetStyles[currentWordIndex].BackgroundColor = System.Drawing.Color.LightGray;
     }
 
     private void UpdateLastWordStlye(bool lastWordWasRight)
     {
         if (lastWordWasRight)
         {
-            WordSetStyles[CurrentWordIndex - 1].Color = System.Drawing.Color.Green;
+            WordSetStyles[currentWordIndex - 1].Color = System.Drawing.Color.Green;
         }
         else
         {
-            WordSetStyles[CurrentWordIndex - 1].Color = System.Drawing.Color.Red;
+            WordSetStyles[currentWordIndex - 1].Color = System.Drawing.Color.Red;
         }
     }
 }
