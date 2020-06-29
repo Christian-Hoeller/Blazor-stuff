@@ -19,17 +19,17 @@
     protected override void OnInitialized()
     {
         FillWordSet();
-        WordSetStyles = new Classes.WordStyle[WordSet.Length];
         FillStyles();
     }
 
     private void FillStyles()
     {
-        for(int i = 0; i < WordSetStyles.Length; i++)
+        WordSetStyles = new Classes.WordStyle[WordSet.Length];
+        for (int i = 0; i < WordSetStyles.Length; i++)
         {
-            WordSetStyles[i] = new Classes.WordStyle("white", "black");
+            WordSetStyles[i] = new Classes.WordStyle(System.Drawing.Color.White, System.Drawing.Color.Black);
         }
-        WordSetStyles[0].BackgroundColor = "gray";
+        WordSetStyles[0].BackgroundColor = System.Drawing.Color.LightGray;
     }
 
     private string currentWord;
@@ -47,30 +47,35 @@
     private void FillWordSet()
     {
         string[] words = new string[200];
+        List<string> wordList = new List<string>() { "Hallo", "wie", "geht", "es", "dir", "du", "coolian" };
+        Random r = new Random();
 
         for (int i = 0; i < words.Length; i++)
         {
-            words[i] = "Wort";
+            words[i] = wordList[r.Next(0, wordList.Count - 1)];
         }
         WordSet = words;
     }
 
     private void KeyUp(KeyboardEventArgs e)
     {
+        UpdateWordStlye();
         if (e.Key == " ")
         {
-            currentWord = InputValue;
-            string charactersAfterSpace = currentWord.Split(" ")[1];
+            currentWord = InputValue.Split(" ")[0];
+            string charactersAfterSpace = InputValue.Split(" ")[1];
             bool wordIsRight = CheckIfInputIsRight();
 
             ClearInput();
             InputValue = charactersAfterSpace;
+            currentWordIndex++;
+            UpdateBackgroundHighlight();
         }
-        CheckStlye();
     }
 
     private bool CheckIfInputIsRight()
     {
+        Console.WriteLine($"currentword={currentWord}_/{WordSet[currentWordIndex]}_");
         return currentWord == WordSet[currentWordIndex];
     }
 
@@ -80,15 +85,22 @@
         InputValue = string.Empty;
     }
 
-    private void CheckStlye()
+    private void UpdateBackgroundHighlight()
     {
-        if (WordSet[currentWordIndex].StartsWith(InputValue))
+        WordSetStyles[currentWordIndex - 1].BackgroundColor = System.Drawing.Color.White;
+        WordSetStyles[currentWordIndex].BackgroundColor = System.Drawing.Color.LightGray;
+        Console.WriteLine(System.Drawing.Color.LightGray.Name);
+    }
+
+    private void UpdateWordStlye()
+    {
+        if (!WordSet[currentWordIndex].StartsWith(InputValue.Split(" ")[0]))
         {
-            //WordSetStyles[currentWordIndex];
+            WordSetStyles[currentWordIndex].Color = System.Drawing.Color.Red;
         }
         else
         {
-            Console.WriteLine("nope");
+            WordSetStyles[currentWordIndex].Color = System.Drawing.Color.Black;
         }
     }
 }

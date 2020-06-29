@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -7,16 +8,16 @@ namespace Portfolio.Classes
 {
     public class WordStyle
     {
-        public WordStyle(string backgroundColor, string color)
+        public WordStyle(Color backgroundColor, Color color)
         {
             Color = color;
             BackgroundColor = backgroundColor;
         }
-        public string BackgroundColor { get; set; }
-        public string Color { get; set; }
+        public Color BackgroundColor { get; set; }
+        public Color Color { get; set; }
         public override string ToString()
         {
-            return $"color:{Color}; background-color:{BackgroundColor};";
+            return $"color:{Color.Name}; background-color:{BackgroundColor.Name};";
         }
     }
 }
