@@ -16,10 +16,25 @@
 
 
 @code {
+    private string[] WordSet { get; set; }
+    private Portfolio.Classes.WordStyle[] WordSetStyles { get; set; }
+
     protected override void OnInitialized()
     {
         FillWordSet();
         FillStyles();
+    }
+
+    private void FillWordSet()
+    {
+        string[] words = new string[200];
+        List<string> wordList = new List<string>() { "Hallo", "wie", "geht", "es", "dir", "du", "coolian" };
+        Random r = new Random();
+        for (int i = 0; i < words.Length; i++)
+        {
+            words[i] = wordList[r.Next(0, wordList.Count)];
+        }
+        WordSet = words;
     }
 
     private void FillStyles()
@@ -32,75 +47,65 @@
         WordSetStyles[0].BackgroundColor = System.Drawing.Color.LightGray;
     }
 
-    private string currentWord;
-
     private string InputValue { get; set; }
-
-    private string[] WordSet { get; set; }
-
-    private Portfolio.Classes.WordStyle[] WordSetStyles { get; set; }
-
-
-    private int currentWordIndex = 0;
-
-
-    private void FillWordSet()
-    {
-        string[] words = new string[200];
-        List<string> wordList = new List<string>() { "Hallo", "wie", "geht", "es", "dir", "du", "coolian" };
-        Random r = new Random();
-
-        for (int i = 0; i < words.Length; i++)
-        {
-            words[i] = wordList[r.Next(0, wordList.Count - 1)];
-        }
-        WordSet = words;
-    }
+    private string CurrentWord { get; set; }
+    private int CurrentWordIndex { get; set; } = 0;
 
     private void KeyUp(KeyboardEventArgs e)
     {
-        UpdateWordStlye();
+        UpdateWordColor();
         if (e.Key == " ")
         {
-            currentWord = InputValue.Split(" ")[0];
+            CurrentWord = InputValue.Split(" ")[0];
             string charactersAfterSpace = InputValue.Split(" ")[1];
             bool wordIsRight = CheckIfInputIsRight();
 
             ClearInput();
             InputValue = charactersAfterSpace;
-            currentWordIndex++;
-            UpdateBackgroundHighlight();
+            CurrentWordIndex++;
+            UpdateWordBackgroundColor();
+            UpdateLastWordStlye(wordIsRight);
+        }
+    }
+
+    private void UpdateWordColor()
+    {
+        if (!WordSet[CurrentWordIndex].StartsWith(InputValue.Split(" ")[0]))
+        {
+            WordSetStyles[CurrentWordIndex].Color = System.Drawing.Color.Red;
+        }
+        else
+        {
+            WordSetStyles[CurrentWordIndex].Color = System.Drawing.Color.Black;
         }
     }
 
     private bool CheckIfInputIsRight()
     {
-        Console.WriteLine($"currentword={currentWord}_/{WordSet[currentWordIndex]}_");
-        return currentWord == WordSet[currentWordIndex];
+        return CurrentWord == WordSet[CurrentWordIndex];
     }
 
     private void ClearInput()
     {
-        currentWord = string.Empty;
+        CurrentWord = string.Empty;
         InputValue = string.Empty;
     }
 
-    private void UpdateBackgroundHighlight()
+    private void UpdateWordBackgroundColor()
     {
-        WordSetStyles[currentWordIndex - 1].BackgroundColor = System.Drawing.Color.White;
-        WordSetStyles[currentWordIndex].BackgroundColor = System.Drawing.Color.LightGray;
-        Console.WriteLine(System.Drawing.Color.LightGray.Name);
+        WordSetStyles[CurrentWordIndex - 1].BackgroundColor = System.Drawing.Color.White;
+        WordSetStyles[CurrentWordIndex].BackgroundColor = System.Drawing.Color.LightGray;
     }
 
-    private void UpdateWordStlye()
+    private void UpdateLastWordStlye(bool lastWordWasRight)
     {
-        if (!WordSet[currentWordIndex].StartsWith(InputValue.Split(" ")[0]))
+        if (lastWordWasRight)
         {
-            WordSetStyles[currentWordIndex].Color = System.Drawing.Color.Red;
+            WordSetStyles[CurrentWordIndex - 1].Color = System.Drawing.Color.Green;
         }
         else
         {
-            WordSetStyles[currentWordIndex].Color = System.Drawing.Color.Black;
+            WordSetStyles[CurrentWordIndex - 1].Color = System.Drawing.Color.Red;
         }
     }
 }
