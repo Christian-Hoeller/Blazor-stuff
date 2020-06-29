@@ -1,9 +1,85 @@
-﻿<h3>Typing</h3>
+﻿@page "/typing"
 
+<h3>Typing Test</h3>
 
+<div class="word-container">
+    @for (int i = 0; i < WordSet.Length; i++)
+    {
+        <span class="word-@i" style="@WordSetStyles[i]">@WordSet[i]</span>
+    }
+</div>
+
+<div class="word-input">
+    <input type="text" @onkeyup="KeyUp" @bind-value="InputValue" @bind-value:event="oninput" />
+</div>
 
 
 
 @code {
+    protected override void OnInitialized()
+    {
+        FillWordSet();
+        WordSetStyles = new string[WordSet.Length];
+        WordSetStyles[0] = "background-color:gray";
+    }
 
+    private string currentWord;
+
+    private string InputValue { get; set; }
+
+    private string[] WordSet { get; set; }
+
+    private string[] WordSetStyles { get; set; }
+
+    private int currentWordIndex = 0;
+
+    private string currentWordStlye = "color:green";
+
+    private void FillWordSet()
+    {
+        string[] words = new string[200];
+
+        for (int i = 0; i < words.Length; i++)
+        {
+            words[i] = "Wort";
+        }
+        WordSet = words;
+    }
+
+    private void KeyUp(KeyboardEventArgs e)
+    {
+        if (e.Key == " ")
+        {
+            currentWord = InputValue;
+            string charactersAfterSpace = currentWord.Split(" ")[1];
+            bool wordIsRight = CheckIfInputIsRight();
+
+            ClearInput();
+            InputValue = charactersAfterSpace;
+        }
+        CheckStlye();
+    }
+
+    private bool CheckIfInputIsRight()
+    {
+        return currentWord == WordSet[currentWordIndex];
+    }
+
+    private void ClearInput()
+    {
+        currentWord = string.Empty;
+        InputValue = string.Empty;
+    }
+
+    private void CheckStlye()
+    {
+        if (WordSet[currentWordIndex].StartsWith(InputValue))
+        {
+            //WordSetStyles[currentWordIndex];
+        }
+        else
+        {
+            Console.WriteLine("nope");
+        }
+    }
 }
