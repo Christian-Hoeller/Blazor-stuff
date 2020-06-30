@@ -8,11 +8,18 @@
 <select @onchange="WordAmountChanged">
     @foreach (var wordAmount in WordAmounts)
     {
-        <option>@wordAmount</option>
+        @if(wordAmount == WordSetSettings.WordAmount)
+        {
+            <option selected>@wordAmount</option>
+        }
+        else
+        {
+            <option>@wordAmount</option>
+        }
     }
     
 </select>
-<select>
+<select @onchange="LanguageChanged">
     @foreach(var language in Langauges)
     {
         if(language == SelectedLanguage)
@@ -35,13 +42,19 @@
 
 <div class="word-input">
     <input type="text" spellcheck="false" @onkeyup="KeyUp" @bind-value="InputValue" @bind-value:event="oninput" readonly=@gameOver />
+    <button @onclick="ResetEverything">restart</button>
 </div>
 
-<p>Wrong Words:@wrongWords</p>
-<p>Correct Words:@correctWords</p>
-<p>Correct Characters:@correctCharacters</p>
-<p>Your Time:@StopWatchValue</p>
-<p>WPM:@wordsPerMinute</p>
+<div>
+    <h4>YOUR STATS</h4>
+    <p>Wrong Words:@wrongWords</p>
+    <p>Correct Words:@correctWords</p>
+    <p>Correct Characters:@correctCharacters</p>
+    <p>Your Time:@StopWatchValue</p>
+    <p>WPM:@wordsPerMinute</p>
+</div>
+
+
 
 @code {
 
@@ -51,6 +64,12 @@
     private void WordAmountChanged(ChangeEventArgs e)
     {
         WordSetSettings.WordAmount = Convert.ToInt32(e.Value);
+        ResetEverything();
+    }
+
+    private void LanguageChanged(ChangeEventArgs e)
+    {
+        SelectedLanguage = (string)e.Value;
         ResetEverything();
     }
 
@@ -92,7 +111,7 @@
     private string[] WordSet { get; set; }
     private WordStyle[] WordSetStyles { get; set; }
 
-    List<int> WordAmounts = new List<int>() { 10, 100, 200, 300, 400 };
+    List<int> WordAmounts = new List<int>() { 50, 100, 200, 300, 400 };
     WordSetSettings WordSetSettings;
     List<string> Langauges = new List<string>() { "german", "english" };
 
@@ -102,7 +121,7 @@
         {
             SelectedLanguage = "german";
         }
-        WordSetSettings = new WordSetSettings("german", WordAmounts[0]);
+        WordSetSettings = new WordSetSettings("german", WordAmounts[1]);
         FillWordSet();
         FillStyles();
     }
@@ -110,11 +129,14 @@
     private void FillWordSet()
     {
         string[] words = new string[WordSetSettings.WordAmount];
-        List<string> wordList = new List<string>() { "hallo", "wie", "geht", "es", "vielleicht", "immer", "kacken", "denken", "machen", "gehen" };
+
+        WordSets AllWordSets = new WordSets();
+        List<string> selectedWordSet = AllWordSets.GetSetByLanguage(SelectedLanguage);
+
         Random r = new Random();
         for (int i = 0; i < words.Length; i++)
         {
-            words[i] = wordList[r.Next(0, wordList.Count)];
+            words[i] = selectedWordSet[r.Next(0, selectedWordSet.Count)];
         }
         WordSet = words;
     }
