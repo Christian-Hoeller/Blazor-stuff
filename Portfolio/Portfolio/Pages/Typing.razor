@@ -1,13 +1,28 @@
 ﻿@page "/typing"
+@page "/typing/{SelectedLanguage}"
 @inject IJSRuntime JSRuntime;
 @using Classes;
 
 <h3>Typing Test</h3>
 
 <select @onchange="WordAmountChanged">
-    @foreach(var wordAmount in WordAmounts)
+    @foreach (var wordAmount in WordAmounts)
     {
         <option>@wordAmount</option>
+    }
+    
+</select>
+<select>
+    @foreach(var language in Langauges)
+    {
+        if(language == SelectedLanguage)
+        {
+            <option selected>@language</option>
+        }
+        else
+        {
+            <option>@language</option>
+        }
     }
 </select>
 
@@ -21,16 +36,17 @@
 <div class="word-input">
     <input type="text" spellcheck="false" @onkeyup="KeyUp" @bind-value="InputValue" @bind-value:event="oninput" readonly=@gameOver />
 </div>
+
 <p>Wrong Words:@wrongWords</p>
 <p>Correct Words:@correctWords</p>
 <p>Correct Characters:@correctCharacters</p>
 <p>Your Time:@StopWatchValue</p>
 <p>WPM:@wordsPerMinute</p>
 
-
-
 @code {
 
+    [Parameter]
+    public string SelectedLanguage { get; set; }
 
     private void WordAmountChanged(ChangeEventArgs e)
     {
@@ -51,10 +67,6 @@
         wrongWords = 0;
         InputValue = string.Empty;
     }
-
-
-
-
 
     #region Timer
 
@@ -80,11 +92,16 @@
     private string[] WordSet { get; set; }
     private WordStyle[] WordSetStyles { get; set; }
 
-    List<int> WordAmounts = new List<int>() { 10,100, 200, 300, 400};
+    List<int> WordAmounts = new List<int>() { 10, 100, 200, 300, 400 };
     WordSetSettings WordSetSettings;
+    List<string> Langauges = new List<string>() { "german", "english" };
 
     protected override void OnInitialized()
     {
+        if(SelectedLanguage == null)
+        {
+            SelectedLanguage = "german";
+        }
         WordSetSettings = new WordSetSettings("german", WordAmounts[0]);
         FillWordSet();
         FillStyles();
@@ -142,7 +159,7 @@
 
                 ClearInput();
                 InputValue = charactersAfterSpace;
-                if(currentWordIndex == WordSet.Length - 1)
+                if (currentWordIndex == WordSet.Length - 1)
                 {
                     //-------------------------typing test has ended
                     istStopwatchRunning = false;
