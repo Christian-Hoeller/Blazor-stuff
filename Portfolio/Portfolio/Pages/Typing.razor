@@ -45,7 +45,7 @@
     <button @onclick="ResetEverything">restart</button>
 </div>
 
-<div>
+<div style="@ShowStats">
     <h4>YOUR STATS</h4>
     <p>Wrong Words:@wrongWords</p>
     <p>Correct Words:@correctWords</p>
@@ -61,57 +61,7 @@
     [Parameter]
     public string SelectedLanguage { get; set; }
 
-    private void WordAmountChanged(ChangeEventArgs e)
-    {
-        WordSetSettings.WordAmount = Convert.ToInt32(e.Value);
-        ResetEverything();
-    }
-
-    private void LanguageChanged(ChangeEventArgs e)
-    {
-        SelectedLanguage = (string)e.Value;
-        ResetEverything();
-    }
-
-    private void ResetEverything()
-    {
-        FillWordSet();
-        FillStyles();
-        gameOver = false;
-        StopWatchValue = new TimeSpan();
-        istStopwatchRunning = false;
-        currentWordIndex = 0;
-        correctCharacters = 0;
-        correctWords = 0;
-        wrongWords = 0;
-        InputValue = string.Empty;
-    }
-
-    #region Timer
-
-    TimeSpan StopWatchValue = new TimeSpan();
-    bool istStopwatchRunning = false;
-
-    async Task StartStopWatch()
-    {
-        istStopwatchRunning = true;
-        while (istStopwatchRunning)
-        {
-            await Task.Delay(1000);
-            if (istStopwatchRunning)
-            {
-                StopWatchValue = StopWatchValue.Add(new TimeSpan(0, 0, 1));
-                StateHasChanged();
-            }
-        }
-    }
-
-    #endregion
-
-    private string[] WordSet { get; set; }
-    private WordStyle[] WordSetStyles { get; set; }
-
-    List<int> WordAmounts = new List<int>() { 50, 100, 200, 300, 400 };
+    List<int> WordAmounts = new List<int>() {10, 50, 100, 200, 300, 400 };
     WordSetSettings WordSetSettings;
     List<string> Langauges = new List<string>() { "german", "english" };
 
@@ -125,6 +75,9 @@
         FillWordSet();
         FillStyles();
     }
+
+    private string[] WordSet { get; set; }
+    private WordStyle[] WordSetStyles { get; set; }
 
     private void FillWordSet()
     {
@@ -149,6 +102,37 @@
             WordSetStyles[i] = new WordStyle(System.Drawing.Color.White, System.Drawing.Color.Black);
         }
         WordSetStyles[0].BackgroundColor = System.Drawing.Color.LightGray;
+    }
+
+    private void WordAmountChanged(ChangeEventArgs e)
+    {
+        WordSetSettings.WordAmount = Convert.ToInt32(e.Value);
+        ResetEverything();
+    }
+
+    private void LanguageChanged(ChangeEventArgs e)
+    {
+        SelectedLanguage = (string)e.Value;
+        ResetEverything();
+    }
+
+    public string ShowStats { get; set; } = "display: none;";
+
+
+
+    private void ResetEverything()
+    {
+        FillWordSet();
+        FillStyles();
+        gameOver = false;
+        StopWatchValue = new TimeSpan();
+        istStopwatchRunning = false;
+        currentWordIndex = 0;
+        correctCharacters = 0;
+        correctWords = 0;
+        wrongWords = 0;
+        InputValue = string.Empty;
+        ShowStats = "display:none;";
     }
 
     private bool gameOver = false;
@@ -187,6 +171,7 @@
                     istStopwatchRunning = false;
                     gameOver = true;
                     CalculateWordsPerMinute();
+                    ShowStats = string.Empty;
                 }
                 else
                 {
@@ -209,6 +194,23 @@
         else
         {
             WordSetStyles[currentWordIndex].Color = System.Drawing.Color.Black;
+        }
+    }
+
+    TimeSpan StopWatchValue = new TimeSpan();
+    bool istStopwatchRunning = false;
+
+    async Task StartStopWatch()
+    {
+        istStopwatchRunning = true;
+        while (istStopwatchRunning)
+        {
+            await Task.Delay(1000);
+            if (istStopwatchRunning)
+            {
+                StopWatchValue = StopWatchValue.Add(new TimeSpan(0, 0, 1));
+                StateHasChanged();
+            }
         }
     }
 
