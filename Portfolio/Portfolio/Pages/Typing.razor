@@ -1,6 +1,15 @@
 ﻿@page "/typing"
+@inject IJSRuntime JSRuntime;
+@using Classes;
 
 <h3>Typing Test</h3>
+
+<select @onchange="WordAmountChanged">
+    @foreach(var wordAmount in WordAmounts)
+    {
+        <option>@wordAmount</option>
+    }
+</select>
 
 <div class="word-container">
     @for (int i = 0; i < WordSet.Length; i++)
@@ -14,60 +23,70 @@
 </div>
 
 
-WrongWords:@wrongWords <br />
-CorrectWords:@correctWords<br />
-CorrectCharacters:@correctCharacters<br />
+WrongWords:@wrongWords
 <br />
-Time left:@TimeLeft
-<p>@displayText</p>
+CorrectWords:@correctWords
+<br />
+CorrectCharacters:@correctCharacters
+<br />
+<br />
+Time left:@StopWatchValue
+
 
 
 @code {
 
 
-    #region Timer
-
-    TimeSpan TimeLeft = new TimeSpan(0, 0, 10);  //1 minute Timer
-    private bool timerStarted = false;
-    private string displayText = "";
-
-    async Task Timer()
+    private void WordAmountChanged(ChangeEventArgs e)
     {
-        timerStarted = true;
-        while (TimeLeft > new TimeSpan())
-        {
-            await Task.Delay(1000);
-            Console.WriteLine(TimeLeft);
-            TimeLeft = TimeLeft.Subtract(new TimeSpan(0, 0, 1));
-            StateHasChanged();
-        }
-        await AfterTime();
-        StateHasChanged();
+        WordSetSettings.WordAmount = Convert.ToInt32(e.Value);
+        FillWordSet();
+        FillStyles();
     }
 
-    Task AfterTime()
+
+
+
+
+    #region Timer
+
+    TimeSpan StopWatchValue = new TimeSpan();
+    bool istStopwatchRunning = false;
+
+    async Task StartStopWatch()
     {
-        gameOver = true;
-        InputValue = string.Empty;
-        displayText = "Test ist vorbei";
-        return Task.CompletedTask;
+        istStopwatchRunning = true;
+        while (istStopwatchRunning)
+        {
+            await Task.Delay(1000);
+            if (istStopwatchRunning)
+            {
+                StopWatchValue = StopWatchValue.Add(new TimeSpan(0, 0, 1));
+                StateHasChanged();
+            }
+        }
     }
 
     #endregion
 
     private string[] WordSet { get; set; }
-    private Portfolio.Classes.WordStyle[] WordSetStyles { get; set; }
+    private WordStyle[] WordSetStyles { get; set; }
+
+    List<int> WordAmounts = new List<int>() { 100, 200, 300, 400};
+    WordSetSettings WordSetSettings;
+
 
     protected override void OnInitialized()
     {
+        WordSetSettings = new WordSetSettings("geman", WordAmounts[0]);
         FillWordSet();
         FillStyles();
     }
 
     private void FillWordSet()
     {
-        string[] words = new string[200];
-        List<string> wordList = new List<string>() { "Hallo", "wie", "geht", "es", "dir", "du", "Pferd" };
+        string[] words = new string[WordSetSettings.WordAmount];
+        List<string> wordList = new List<string>() { "hallo", "wie", "geht", "es", "vielleicht", "immer", "kacken", "denken", "machen", "gehen" };
         Random r = new Random();
         for (int i = 0; i < words.Length; i++)
         {
@@ -78,32 +97,33 @@ Time left:@TimeLeft
 
     private void FillStyles()
     {
-        WordSetStyles = new Classes.WordStyle[WordSet.Length];
+        WordSetStyles = new WordStyle[WordSet.Length];
         for (int i = 0; i < WordSetStyles.Length; i++)
         {
-            WordSetStyles[i] = new Classes.WordStyle(System.Drawing.Color.White, System.Drawing.Color.Black);
+            WordSetStyles[i] = new WordStyle(System.Drawing.Color.White, System.Drawing.Color.Black);
         }
         WordSetStyles[0].BackgroundColor = System.Drawing.Color.LightGray;
     }
 
     private bool gameOver = false;
-
     private string InputValue { get; set; }
     private string CurrentWord { get; set; }
-    private int currentWordIndex { get; set; } = 0;
 
+    private int currentWordIndex = 0;
     public int correctWords = 0;
     public int wrongWords = 0;
     public int correctCharacters = 0;
+
+    private int wordsPerMinute;
 
     private async void KeyUp(KeyboardEventArgs e)
     {
         if (!gameOver)
         {
             UpdateWordColor();
-            if(timerStarted == false)
+            if (istStopwatchRunning == false)
             {
-                Timer();
+                StartStopWatch();
             }
             if (e.Key == " ")
             {
@@ -145,6 +165,7 @@ Time left:@TimeLeft
         {
             correctWords++;
             correctCharacters += CurrentWord.Length;
+            correctCharacters += 1; //we don't count space to the correctword but we have to count it to a the correct characters
         }
         else
         {
