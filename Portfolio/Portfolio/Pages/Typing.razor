@@ -21,16 +21,11 @@
 <div class="word-input">
     <input type="text" spellcheck="false" @onkeyup="KeyUp" @bind-value="InputValue" @bind-value:event="oninput" readonly=@gameOver />
 </div>
-
-
-WrongWords:@wrongWords
-<br />
-CorrectWords:@correctWords
-<br />
-CorrectCharacters:@correctCharacters
-<br />
-<br />
-Time left:@StopWatchValue
+<p>Wrong Words:@wrongWords</p>
+<p>Correct Words:@correctWords</p>
+<p>Correct Characters:@correctCharacters</p>
+<p>Your Time:@StopWatchValue</p>
+<p>WPM:@wordsPerMinute</p>
 
 
 
@@ -40,8 +35,21 @@ Time left:@StopWatchValue
     private void WordAmountChanged(ChangeEventArgs e)
     {
         WordSetSettings.WordAmount = Convert.ToInt32(e.Value);
+        ResetEverything();
+    }
+
+    private void ResetEverything()
+    {
         FillWordSet();
         FillStyles();
+        gameOver = false;
+        StopWatchValue = new TimeSpan();
+        istStopwatchRunning = false;
+        currentWordIndex = 0;
+        correctCharacters = 0;
+        correctWords = 0;
+        wrongWords = 0;
+        InputValue = string.Empty;
     }
 
 
@@ -72,13 +80,12 @@ Time left:@StopWatchValue
     private string[] WordSet { get; set; }
     private WordStyle[] WordSetStyles { get; set; }
 
-    List<int> WordAmounts = new List<int>() { 100, 200, 300, 400};
+    List<int> WordAmounts = new List<int>() { 10,100, 200, 300, 400};
     WordSetSettings WordSetSettings;
-
 
     protected override void OnInitialized()
     {
-        WordSetSettings = new WordSetSettings("geman", WordAmounts[0]);
+        WordSetSettings = new WordSetSettings("german", WordAmounts[0]);
         FillWordSet();
         FillStyles();
     }
@@ -135,9 +142,21 @@ Time left:@StopWatchValue
 
                 ClearInput();
                 InputValue = charactersAfterSpace;
-                currentWordIndex++;
-                UpdateWordBackgroundColor();
-                UpdateLastWordStlye(wordIsRight);
+                if(currentWordIndex == WordSet.Length - 1)
+                {
+                    //-------------------------typing test has ended
+                    istStopwatchRunning = false;
+                    gameOver = true;
+                    CalculateWordsPerMinute();
+                }
+                else
+                {
+                    currentWordIndex++;
+                    UpdateWordBackgroundColor();
+                    UpdateLastWordStlye(wordIsRight);
+                }
+
+
             }
         }
     }
@@ -165,7 +184,7 @@ Time left:@StopWatchValue
         {
             correctWords++;
             correctCharacters += CurrentWord.Length;
-            correctCharacters += 1; //we don't count space to the correctword but we have to count it to a the correct characters
+            correctCharacters += 1; //space counts as a character
         }
         else
         {
@@ -195,5 +214,13 @@ Time left:@StopWatchValue
         {
             WordSetStyles[currentWordIndex - 1].Color = System.Drawing.Color.Red;
         }
+    }
+
+    private void CalculateWordsPerMinute()
+    {
+        //60 seconds is a factor of 1
+        var factor = StopWatchValue.TotalSeconds / 60;
+
+        wordsPerMinute = Convert.ToInt32((correctCharacters / 5) / factor);
     }
 }
