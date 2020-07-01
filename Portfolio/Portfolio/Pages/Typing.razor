@@ -20,7 +20,7 @@
     
 </select>
 <select @onchange="LanguageChanged">
-    @foreach(var language in Langauges)
+    @foreach(var language in Languages)
     {
         if(language == SelectedLanguage)
         {
@@ -43,6 +43,7 @@
 <div class="word-input">
     <input type="text" spellcheck="false" @onkeyup="KeyUp" @bind-value="InputValue" @bind-value:event="oninput" readonly=@gameOver />
     <button @onclick="ResetEverything">restart</button>
+    @StopWatchValue
 </div>
 
 <div style="@ShowStats">
@@ -63,11 +64,11 @@
 
     List<int> WordAmounts = new List<int>() {10, 50, 100, 200, 300, 400 };
     WordSetSettings WordSetSettings;
-    List<string> Langauges = new List<string>() { "german", "english" };
+    List<string> Languages = new List<string>() { "german", "english" };
 
     protected override void OnInitialized()
     {
-        if(SelectedLanguage == null)
+        if(SelectedLanguage == null || Languages.Contains(SelectedLanguage) == false)
         {
             SelectedLanguage = "german";
         }
