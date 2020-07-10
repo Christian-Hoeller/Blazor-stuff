@@ -1,9 +1,78 @@
 ﻿@page "/Sorting"
-
+@using Classes.Sorting
 
 <h3>SortingAlgorithms</h3>
 
+<select class="form-control" @onchange="AlgorithmSelected">
+    @foreach(var spec in specs)
+    {
+        <option>@spec.Name</option>
+    }
+</select>
+
 @code {
 
+    List<int> numbersList = new List<int>();
+    List<SortingSpec> specs = new List<SortingSpec>();
+    SortingSpec selectedSpec;
 
+    private IReadOnlyCollection<UISortingAlgorithmSolver> solvers = new[]
+     {
+        new UISortingAlgorithmSolver(new BubbleSort(), "BubbleSort", "crimson")
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        await FillRandomSpecs();
+    }
+
+    async Task FillRandomSpecs()
+    {
+        for(int i = 10; i <= 100; i+=10)
+        {
+            SortingSpec x = new SortingSpec(await GetRandomNumberList(i), i.ToString());
+            specs.Add(x);
+        }
+    }
+
+    async Task<List<int>> GetRandomNumberList(int length)
+    {
+        List<int> randomNumbers = new List<int>();
+        Random r = new Random();
+
+        for (int i = 0; i < length; i++)
+        {
+            randomNumbers.Add(r.Next(0,1000));
+        }
+        return randomNumbers;
+    }
+
+    public void AlgorithmSelected(ChangeEventArgs e)
+    {
+        string selectedName = (string)e.Value;
+        selectedSpec = specs.Single(spec => spec.Name == selectedName);
+    }
+
+    public class UISortingAlgorithmSolver
+    {
+        private readonly ISortingAlgorithmSolver solver;
+
+        public string Name { get; }
+        public string Color { get; }
+        public bool IsSelected { get; set; }
+        private List<SortingArrangement> solution;
+
+
+        public UISortingAlgorithmSolver(ISortingAlgorithmSolver solver, string name, string color)
+        {
+            this.solver = solver;
+            Name = name;
+            Color = color;
+        }
+
+        public void Solve(IReadOnlyList<int> numbers)
+        {
+            this.solution = solver.Solve(numbers);
+        }
+    }
 }

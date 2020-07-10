@@ -212,10 +212,7 @@ else
         {
             return;
         }
-        Console.WriteLine("this works fine");
-
         Canvas2DContext context = await scene.CreateCanvas2DAsync();
-        Console.WriteLine("i can create the canvas");
         await context.ClearRectAsync(0, 0, scene.Width, scene.Height);
 
 
