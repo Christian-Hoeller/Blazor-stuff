@@ -1,5 +1,11 @@
 ﻿@import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
 
+* {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
@@ -181,3 +187,267 @@ app {
         display: block;
     }
 }
+
+
+/*index*/
+
+
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&display=swap');
+
+
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.background-grid {
+    display: grid;
+    grid-template-columns: 50% 50%;
+    width: 100vh;
+    height: 100vh;
+}
+
+.left {
+    position: absolute;
+    width: 50%;
+    height: 100vh;
+    background-color: #101010;
+    z-index: -1;
+}
+
+/* .right{
+    position:absolute;
+    width: 50%;
+    height: 100vh;
+    background-color: #CED0FF;
+} */
+
+.wrapper {
+    display: grid;
+    grid-template-areas: ". welcome . . ." ". iam . . ." ". firstname . passion ." ". lastname . languages ." ". underline . social-media ." ". mywork . social-media-tag ." ". mystory . . ." ". random . . ." ". contact . . .";
+    grid-template-columns: 10% 30% 20% 30% 10%;
+    grid-template-rows: auto;
+    justify-items: center;
+    /* Might change afterwards */
+    font-family: 'Open Sans', sans-serif;
+}
+
+.welcome {
+    margin-top: 5vw;
+    font-size: 2.5vw;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    letter-spacing: 1vw;
+    grid-area: welcome;
+    justify-self: start;
+    color: #FFFFFF;
+    /* font-weight: bold; */
+    text-transform: uppercase;
+}
+
+.iam {
+    margin-top: 1.5vw;
+    font-size: 1.5vw;
+    grid-area: iam;
+    justify-self: start;
+    color: #FFFFFF;
+}
+
+.firstname {
+    margin-top: 2vw;
+    grid-area: firstname;
+    justify-self: start;
+    font-size: 6vw;
+    font-weight: bold;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #FFF84D;
+    animation: 1s ease-out 0s 1 slideInFromLeft;
+}
+
+    .firstname::selection {
+        background: #FFFFFF;
+        color: #525252;
+    }
+
+.lastname {
+    grid-area: lastname;
+    justify-self: start;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    font-size: 6vw;
+    color: #FFF84D;
+    animation: 1s ease-out 0s 1 slideInFromLeft;
+}
+
+@keyframes slideInFromLeft {
+    0% {
+        transform: translateX(-100%);
+    }
+
+    100% {
+        transform: translateX(0);
+    }
+}
+
+.underline {
+    grid-area: underline;
+    justify-self: start;
+    background-color: #FFF84D;
+    width: 100%;
+    height: 0.5vw;
+    animation: move-underline 4s;
+}
+
+
+
+@keyframes move-underline {
+    0% {
+        width: 0%;
+    }
+
+    100% {
+        width: 100%;
+    }
+}
+
+.passion {
+    color: #1A1A1A;
+    font-size: 3vw;
+    font-weight: bold;
+    justify-self: center;
+    grid-area: passion;
+    align-self: end;
+}
+
+.languages {
+    color: #525252;
+    font-size: 2vw;
+    grid-area: languages;
+    justify-self: center;
+}
+
+.social-media {
+    display: grid;
+    grid-gap: 2vw;
+    grid-area: social-media;
+    grid-template-columns: auto auto auto;
+    /* grid-template-areas:
+    "instagram linkedin github"; */
+    grid-template-columns: auto auto auto;
+    justify-self: center;
+}
+
+.social-media-tag {
+    grid-area: social-media-tag;
+    justify-self: center;
+    letter-spacing: 0.5vw;
+    text-transform: uppercase;
+    font-size: 0.7vw;
+    color: #525252;
+}
+
+.logo {
+    width: 3.5vw;
+    height: 3.5vw;
+}
+
+.menu {
+    margin: 0.5vw;
+    letter-spacing: 0.5vw;
+    font-size: 1.5vw;
+    text-transform: uppercase;
+    justify-self: start;
+}
+
+    .menu a {
+        text-decoration: none;
+        color: #FFFFFF;
+        animation: cycle-colors 20s infinite;
+    }
+
+@keyframes cycle-colors {
+    0% {
+        background-color: #532BFF;
+    }
+
+    20% {
+        background-color: #D200E3;
+    }
+
+    40% {
+        background-color: #00E369;
+    }
+
+    60% {
+        background-color: #D200E3;
+    }
+
+    80% {
+        background-color: #E30000;
+    }
+
+    100% {
+        background-color: #532BFF;
+    }
+}
+
+.menu a:hover {
+    color: #FFFFFF;
+    text-decoration: line-through;
+    font-weight: bold;
+    animation: margin-move 2s;
+}
+
+@keyframes margin-move {
+    0% {
+        margin-left: 0vw;
+    }
+
+    100% {
+        margin-left: 1vw;
+    }
+}
+
+.mywork {
+    grid-area: mywork;
+}
+
+.mystory {
+    grid-area: mystory;
+}
+
+.random {
+    grid-area: random;
+}
+
+.contact {
+    grid-area: contact;
+}
+
+
+.passion-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2vh;
+    grid-template-areas: "chocolate web fitness";
+}
+
+.passions {
+    background: green;
+    border-radius: 5px;
+}
+
+
+
+.space-background {
+    top: 100vh;
+    width: 100%;
+    height: 100vh;
+    background-color: #101010;
+    position: absolute;
+}
+
+.space {
+    width: 100%;
+    height: 100%;
+}
+

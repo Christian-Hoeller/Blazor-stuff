@@ -1,8 +1,48 @@
 ﻿@page "/"
 
 
-<h1>Hello, world!</h1>
+<div class="left"></div>
+<div class="righ"></div>
 
-Welcome to your new app.
+<div class="moving"></div>
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+<div class="wrapper">
+
+    <div class="welcome">welcome</div>
+    <div class="iam">my name is</div>
+
+
+    <div class="firstname">Christian</div>
+    <div class="lastname">Höller</div>
+    <div class="passion">.NET Developer</div>
+    <div class="languages">C#;HTML;CSS;JS</div>
+
+
+    <div class="underline"></div>
+    <div class="social-media-tag">social media</div>
+
+    <div class="social-media">
+        <a href="https://www.instagram.com/christian.hoeller/?hl=de" target="blank">
+            <img src="/images/instagram.png" alt="instagram" class="logo">
+        </a>
+        <a href="https://github.com/Christian-Hoeller" target="blank">
+            <img src="/images/github.svg" alt="github" class="logo">
+        </a>
+        <a href="#"><img src="/images/linkedin.svg" alt="linkedin" class="logo"></a>
+    </div>
+
+    <div class="mywork menu"><a href="#">my work</a></div>
+    <div class="mystory menu"><a href="my-story.html">my story</a></div>
+    <div class="random menu"><a href="#">random</a></div>
+    <div class="contact menu"><a href="#">contact</a></div>
+</div>
+
+<input type="button" value="Click me " onClick="document.getElementById('space-background').scrollIntoView();" />
+<div id="space-background" class="space-background">
+    <canvas id="space" class="space"></canvas>
+    <div class="passion-list">
+        <div class="chocolate passions">chocolate</div>
+        <div class="web passions">web</div>
+        <div class="fitness passions">fitness</div>
+    </div>
+</div>
