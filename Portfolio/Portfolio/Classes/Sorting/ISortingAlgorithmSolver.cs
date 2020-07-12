@@ -7,6 +7,6 @@ namespace Portfolio.Classes.Sorting
 {
     public interface ISortingAlgorithmSolver
     {
-        List<SortingArrangement> Solve(IReadOnlyList<int> numbersList);
+        List<SortingArrangement> Solve(List<int> numbersList);
     }
 }

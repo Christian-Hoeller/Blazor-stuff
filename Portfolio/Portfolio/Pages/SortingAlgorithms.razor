@@ -1,24 +1,38 @@
 ﻿@page "/Sorting"
 @using Classes.Sorting
+@using Classes.Sorting.Algorithms
 
 <h3>SortingAlgorithms</h3>
 
 <select class="form-control" @onchange="AlgorithmSelected">
-    @foreach(var spec in specs)
+    @foreach (var spec in specs)
     {
         <option>@spec.Name</option>
     }
 </select>
+
+<h3>Algorithm</h3>
+
+<select class="form-control" @onchange="SolverSelected">
+    @foreach(var solver in solvers)
+    {
+        <option>@solver.Name</option>
+    }
+</select>
+<button @onclick="Start">Start Algorithm</button>
+
 
 @code {
 
     List<int> numbersList = new List<int>();
     List<SortingSpec> specs = new List<SortingSpec>();
     SortingSpec selectedSpec;
+    UISortingAlgorithmSolver selectedSolver;
 
-    private IReadOnlyCollection<UISortingAlgorithmSolver> solvers = new[]
-     {
-        new UISortingAlgorithmSolver(new BubbleSort(), "BubbleSort", "crimson")
+    private List<UISortingAlgorithmSolver> solvers = new List<UISortingAlgorithmSolver>()
+    {
+        new UISortingAlgorithmSolver(new BubbleSort(), "BubbleSort", "crimson"),
+        new UISortingAlgorithmSolver(new QuickSort(), "QuickSort", "crimson")
     };
 
     protected override async Task OnInitializedAsync()
@@ -28,11 +42,19 @@
 
     async Task FillRandomSpecs()
     {
-        for(int i = 10; i <= 100; i+=10)
+        for (int i = 10; i <= 100; i += 10)
         {
             SortingSpec x = new SortingSpec(await GetRandomNumberList(i), i.ToString());
             specs.Add(x);
         }
+    }
+
+    private void Start()
+    {
+        selectedSpec = selectedSpec ?? specs[0];
+        selectedSolver = selectedSolver ?? solvers[0];
+        List<SortingArrangement> arrangements = new List<SortingArrangement>();
+        selectedSolver.Solve(selectedSpec.NumbersList);
     }
 
     async Task<List<int>> GetRandomNumberList(int length)
@@ -42,15 +64,22 @@
 
         for (int i = 0; i < length; i++)
         {
-            randomNumbers.Add(r.Next(0,1000));
+            randomNumbers.Add(r.Next(0, 1000));
         }
         return randomNumbers;
     }
 
     public void AlgorithmSelected(ChangeEventArgs e)
     {
-        string selectedName = (string)e.Value;
-        selectedSpec = specs.Single(spec => spec.Name == selectedName);
+        string selectedAlgorithmName = (string)e.Value;
+        selectedSpec = specs.Single(spec => spec.Name == selectedAlgorithmName);
+    }
+
+    public void SolverSelected(ChangeEventArgs e)
+    {
+        string selectedSolverName = (string)e.Value;
+        selectedSolver = solvers.Single(solver => solver.Name == selectedSolverName);
+        Console.WriteLine(selectedSolver.Name);
     }
 
     public class UISortingAlgorithmSolver
@@ -70,9 +99,15 @@
             Color = color;
         }
 
-        public void Solve(IReadOnlyList<int> numbers)
+        public void Solve(List<int> numbers)
         {
             this.solution = solver.Solve(numbers);
+            Print();
+        }
+
+        private void Print()
+        {
+            //Console.WriteLine(solution.Select(x => x.Arrangement.ToString()));
         }
     }
 }

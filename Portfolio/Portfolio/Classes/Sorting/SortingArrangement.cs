@@ -11,7 +11,11 @@ namespace Portfolio.Classes.Sorting
         {
             Arrangement = arrangement;
         }
-
         public List<int> Arrangement { get; set; }
+
+        public override string ToString()
+        {
+            return $"({string.Join(",", Arrangement)})";
+        }
     }
 }
