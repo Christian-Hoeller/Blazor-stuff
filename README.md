@@ -1,2 +1,2 @@
 # Portfolio
-This is where i try out new things with blazor
+Playing around with blazor
